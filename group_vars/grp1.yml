@@ -17,6 +17,8 @@ firux_nftables_config:
             - raw: iifname lo accept
             - raw: ip protocol icmp accept
             - raw: tcp dport 22 accept
+            - raw: iifname $lan_interface ip protocol 112 accept
+            - raw: iifname $lan_interface udp dport 3780 accept
         forward:
           hook: forward
           policy: drop
@@ -54,65 +56,6 @@ firux_keepalived_enabled: true
 firux_conntrackd_enabled: true
 firux_strongswan_enabled: false
 firux_frr_daemons: []
-firux_keepalived_config: |
-  global_defs {
-    router_id {{ firux_keepalived_node_id }}
-    enable_script_security
-  }
-
-  vrrp_instance VI_FIREWALL {
-    state {{ firux_keepalived_state }}
-    interface {{ firux_keepalived_ha_interface }}
-    virtual_router_id 51
-    priority {{ firux_keepalived_priority }}
-    advert_int 1
-
-    unicast_src_ip {{ firux_keepalived_ha_address }}
-    unicast_peer {
-      {{ firux_keepalived_peer_ha_address }}
-    }
-
-    authentication {
-      auth_type PASS
-      auth_pass {{ firux_keepalived_password }}
-    }
-
-    virtual_ipaddress {
-      {{ firux_keepalived_virtual_ipaddress }}
-    }
-  }
-firux_conntrackd_config: |
-  Sync {
-    Mode FTFW {
-      DisableExternalCache On
-    }
-    Multicast {
-      IPv4_address {{ firux_conntrackd_multicast_address }}
-      Group 3780
-      IPv4_interface {{ firux_keepalived_ha_address }}
-      Interface {{ firux_keepalived_ha_interface }}
-      SndSocketBuffer 1249280
-      RcvSocketBuffer 1249280
-      Checksum on
-    }
-  }
-
-  General {
-    HashSize 32768
-    HashLimit 65535
-    Syslog daemon
-    LockFile /var/lock/conntrackd.lock
-    UNIX {
-      Path /var/run/conntrackd.sock
-    }
-    SocketBufferSize 1249280
-    SocketBufferSizeMaxGrown 2518560
-    Filter From Userspace {
-      Protocol Accept {
-        All
-      }
-    }
-  }
 firux_keepalived_password: firux-ha
 firux_keepalived_ha_interface: eth1
 firux_keepalived_virtual_ip: 10.20.10.5

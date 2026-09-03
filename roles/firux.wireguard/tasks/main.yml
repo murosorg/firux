@@ -4,9 +4,12 @@
     name: wireguard-tools
     state: present
     update_cache: true
-- name: Activer les interfaces WireGuard
-  ansible.builtin.service:
-    name: "wg-quick@{{ item.name }}"
-    enabled: true
-    state: started
+- name: Déployer les tunnels WireGuard
+  ansible.builtin.template:
+    src: wg.conf.j2
+    dest: "/etc/wireguard/{{ item.name }}.conf"
+    owner: root
+    group: root
+    mode: "0600"
   loop: "{{ firux_wireguard_interfaces }}"
+  notify: Redémarrer les tunnels WireGuard

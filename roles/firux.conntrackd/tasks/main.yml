@@ -5,11 +5,10 @@
     state: present
     update_cache: true
 - name: Déployer conntrackd
-  ansible.builtin.copy:
-    content: "{{ firux_conntrackd_config }}"
+  ansible.builtin.template:
+    src: conntrackd.conf.j2
     dest: /etc/conntrackd/conntrackd.conf
     owner: root
     group: root
     mode: "0600"
-  when: firux_conntrackd_config | length > 0
   notify: Redémarrer conntrackd

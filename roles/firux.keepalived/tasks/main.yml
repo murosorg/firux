@@ -5,12 +5,11 @@
     state: present
     update_cache: true
 - name: Déployer keepalived
-  ansible.builtin.copy:
-    content: "{{ firux_keepalived_config }}"
+  ansible.builtin.template:
+    src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
     owner: root
     group: root
     mode: "0600"
     validate: keepalived --config-test --use-file %s
-  when: firux_keepalived_config | length > 0
   notify: Redémarrer keepalived

@@ -12,3 +12,12 @@
     group: frr
     mode: "0640"
   notify: Redémarrer frr
+- name: Déployer les configurations FRR
+  ansible.builtin.copy:
+    content: "{{ item.value }}"
+    dest: "/etc/frr/{{ item.key }}.conf"
+    owner: frr
+    group: frr
+    mode: "0640"
+  loop: "{{ firux_frr_configs | dict2items }}"
+  notify: Redémarrer frr
