@@ -25,6 +25,15 @@
   loop: "{{ firux_wireguard_interfaces }}"
   no_log: true
 
+- name: Générer les clés publiques WireGuard
+  ansible.builtin.shell:
+    cmd: >-
+      wg pubkey < {{ firux_wireguard_key_directory }}/{{ item.name }}.key >
+      {{ firux_wireguard_key_directory }}/{{ item.name }}.pub
+    creates: "{{ firux_wireguard_key_directory }}/{{ item.name }}.pub"
+  loop: "{{ firux_wireguard_interfaces }}"
+  no_log: true
+
 - name: Lire les clés privées WireGuard
   ansible.builtin.slurp:
     src: "{{ firux_wireguard_key_directory }}/{{ item.name }}.key"
