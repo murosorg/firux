@@ -66,3 +66,16 @@ firux_keepalived_virtual_ipaddress: >-
   dev {{ firux_keepalived_ha_interface }}
 
 firux_strongswan_connections: {}
+
+firux_wireguard_enabled: true
+
+firux_wireguard_interfaces:
+  - name: wg0
+    address: 10.100.0.1/30
+    listen_port: 51820
+    # peers:
+    #   - public_key: "CLE_PUBLIQUE_PEER"
+    #     allowed_ips:
+    #       - 10.100.0.2/32
+    #     endpoint: 203.0.113.10:51820
+    #     persistent_keepalive: 25

@@ -4,10 +4,38 @@
     name: wireguard-tools
     state: present
     update_cache: true
+- name: Créer le répertoire WireGuard
+  ansible.builtin.file:
+    path: "{{ firux_wireguard_key_directory }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Vérifier les clés privées WireGuard
+  ansible.builtin.stat:
+    path: "{{ firux_wireguard_key_directory }}/{{ item.name }}.key"
+  loop: "{{ firux_wireguard_interfaces }}"
+  register: firux_wireguard_key_stats
+
+- name: Générer les clés privées WireGuard
+  ansible.builtin.shell:
+    cmd: "wg genkey > {{ firux_wireguard_key_directory }}/{{ item.name }}.key"
+    creates: "{{ firux_wireguard_key_directory }}/{{ item.name }}.key"
+  loop: "{{ firux_wireguard_interfaces }}"
+  no_log: true
+
+- name: Lire les clés privées WireGuard
+  ansible.builtin.slurp:
+    src: "{{ firux_wireguard_key_directory }}/{{ item.name }}.key"
+  loop: "{{ firux_wireguard_interfaces }}"
+  register: firux_wireguard_key_contents
+  no_log: true
+
 - name: Déployer les tunnels WireGuard
   ansible.builtin.template:
     src: wg.conf.j2
-    dest: "/etc/wireguard/{{ item.name }}.conf"
+    dest: "{{ firux_wireguard_key_directory }}/{{ item.name }}.conf"
     owner: root
     group: root
     mode: "0600"

@@ -1,3 +1,4 @@
 ---
 firux_wireguard_interfaces: []
 firux_wireguard_enabled: false
+firux_wireguard_key_directory: /etc/wireguard
