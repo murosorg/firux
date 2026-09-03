@@ -130,20 +130,13 @@
 
 - name: Vérifier la présence de la VIP WAN
   ansible.builtin.command:
-    cmd: ip -4 addr show dev eth0
+    cmd: "ip -4 addr show dev {{ firux_wireguard_vip_interface }}"
   register: firux_wireguard_vip_state
   changed_when: false
 
-- name: Démarrer les tunnels sur le firewall actif
+- name: Gérer les tunnels WireGuard selon le rôle du firewall
   ansible.builtin.systemd:
     name: "wg-quick@{{ item.name }}"
-    state: started
+    state: "{{ 'started' if firux_wireguard_vip_address in firux_wireguard_vip_state.stdout else 'stopped' }}"
+    enabled: false
   loop: "{{ firux_wireguard_interfaces }}"
-  when: "'10.10.10.2/24' in firux_wireguard_vip_state.stdout"
-
-- name: Arrêter les tunnels sur le firewall passif
-  ansible.builtin.systemd:
-    name: "wg-quick@{{ item.name }}"
-    state: stopped
-  loop: "{{ firux_wireguard_interfaces }}"
-  when: "'10.10.10.2/24' not in firux_wireguard_vip_state.stdout"
