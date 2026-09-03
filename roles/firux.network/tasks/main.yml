@@ -1,0 +1,38 @@
+---
+- name: Créer le répertoire systemd-networkd
+  ansible.builtin.file:
+    path: /etc/systemd/network
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Configurer les interfaces réseau
+  ansible.builtin.template:
+    src: interface.network.j2
+    dest: /etc/systemd/network/10-{{ interface.name }}.network
+    owner: root
+    group: root
+    mode: '0644'
+  loop: '{{ firux_network_interfaces }}'
+  loop_control:
+    loop_var: interface
+  notify: Redémarrer systemd-networkd
+
+- name: Configurer les routes réseau
+  ansible.builtin.template:
+    src: routes.network.j2
+    dest: /etc/systemd/network/90-firux-routes.network
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Redémarrer systemd-networkd
+
+- name: Activer le routage IPv4
+  ansible.posix.sysctl:
+    name: '{{ item.key }}'
+    value: '{{ item.value }}'
+    state: present
+    sysctl_set: true
+    reload: true
+  loop: '{{ firux_network_sysctls | dict2items }}'

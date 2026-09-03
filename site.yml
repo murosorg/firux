@@ -4,6 +4,7 @@
   become: true
   roles:
     - firux.system
+    - firux.network
     - firux.nftables
     - firux.wireguard
     - firux.strongswan

@@ -1,0 +1,5 @@
+---
+firux_network_interfaces: []
+firux_network_routes: []
+firux_network_sysctls:
+  net.ipv4.ip_forward: '1'

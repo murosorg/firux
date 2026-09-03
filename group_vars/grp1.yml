@@ -75,6 +75,7 @@ firux_keepalived_virtual_ipaddress: >-
 firux_strongswan_connections: {}
 
 firux_wireguard_enabled: true
+firux_wireguard_vip_address: "10.10.10.2/24"
 firux_wireguard_key_mode: shared
 firux_wireguard_shared_private_key: ""
 firux_wireguard_interfaces:

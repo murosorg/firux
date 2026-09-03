@@ -5,4 +5,4 @@ firux_wireguard_key_directory: /etc/wireguard
 firux_wireguard_key_mode: standalone
 firux_wireguard_shared_private_key: ""
 firux_wireguard_vip_interface: eth0
-firux_wireguard_vip_address: "10.10.10.2/24"
+firux_wireguard_vip_address: ""
