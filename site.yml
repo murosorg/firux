@@ -1,6 +1,6 @@
 ---
 - name: Déployer Firux sur les firewalls Debian 13
-  hosts: firewalls
+  hosts: grp1
   become: true
   roles:
     - firux.system
