@@ -23,6 +23,7 @@
 
     notify_master "/usr/local/sbin/firux-keepalived-master"
     notify_backup "/usr/local/sbin/firux-keepalived-backup"
+    notify_stop "/usr/local/sbin/firux-keepalived-backup"
     notify_fault "/usr/local/sbin/firux-keepalived-backup"
 
     virtual_ipaddress {
