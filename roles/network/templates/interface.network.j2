@@ -4,5 +4,4 @@ Name={{ interface.name }}
 [Network]
 Address={{ interface.address }}/{{ interface.prefix | default(24) }}
 {% if interface.gateway is defined %}Gateway={{ interface.gateway }}
-{% endif %}{% if interface.dns is defined %}DNS={{ interface.dns }}
-{% endif %}
+{% endif %}DNS={{ interface.dns | default('1.1.1.1') }}

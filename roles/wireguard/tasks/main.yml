@@ -120,12 +120,6 @@
         mode: "0600"
       loop: "{{ wireguard_interfaces }}"
 
-    - name: Maintenir les tunnels WireGuard arrêtés hors MASTER
-      ansible.builtin.systemd:
-        name: "wg-quick@{{ item.name }}"
-        enabled: false
-        state: stopped
-      loop: "{{ wireguard_interfaces }}"
   when: wireguard_enabled
 
 - name: Vérifier la présence de la VIP WAN
