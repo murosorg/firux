@@ -20,7 +20,13 @@
       auth_pass {{ firux_keepalived_password }}
     }
 
+    notify_master "/usr/local/sbin/firux-keepalived-master"
+    notify_backup "/usr/local/sbin/firux-keepalived-backup"
+    notify_fault "/usr/local/sbin/firux-keepalived-backup"
+
     virtual_ipaddress {
-      {{ firux_keepalived_virtual_ipaddress }}
+{% for vip in firux_keepalived_virtual_ipaddresses %}
+      {{ vip.address }}/{{ vip.prefix }} dev {{ vip.interface }}
+{% endfor %}
     }
   }

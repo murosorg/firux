@@ -56,6 +56,13 @@ firux_keepalived_enabled: true
 firux_conntrackd_enabled: true
 firux_strongswan_enabled: false
 firux_frr_daemons: []
+firux_keepalived_virtual_ipaddresses:
+  - address: 10.10.10.5
+    prefix: 24
+    interface: eth0
+  - address: 10.20.10.5
+    prefix: 24
+    interface: eth1
 firux_keepalived_password: firux-ha
 firux_keepalived_ha_interface: eth1
 firux_keepalived_virtual_ip: 10.20.10.5
@@ -68,14 +75,14 @@ firux_keepalived_virtual_ipaddress: >-
 firux_strongswan_connections: {}
 
 firux_wireguard_enabled: true
-
+firux_wireguard_key_mode: shared
+firux_wireguard_shared_private_key: ""
 firux_wireguard_interfaces:
   - name: wg0
     address: 10.100.0.1/30
     listen_port: 51820
     peers:
-      - public_key: "Th4iePA5MCx60pmIkfTN0RFbuLBiaaD+s08+Bwm/enA="
+      - public_key: "FvRKnPiz0bqjABZ3NFOr2pC5VvyGPCC3cStVcR9ocCM="
         allowed_ips:
           - 10.100.0.2/32
-        endpoint: 203.0.113.10:51820
         persistent_keepalive: 25
