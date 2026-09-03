@@ -15,7 +15,8 @@
 
     - name: Générer la clé HA sur le firewall primaire
       ansible.builtin.shell:
-        cmd: "wg genkey > {{ firux_wireguard_key_directory }}/{{ item.name }}.key"
+        cmd: >-
+          wg genkey > {{ firux_wireguard_key_directory }}/{{ item.name }}.key
         creates: "{{ firux_wireguard_key_directory }}/{{ item.name }}.key"
       loop: "{{ firux_wireguard_interfaces }}"
       when:
@@ -78,14 +79,16 @@
 
     - name: Générer les clés privées WireGuard
       ansible.builtin.shell:
-        cmd: "wg genkey > {{ firux_wireguard_key_directory }}/{{ item.name }}.key"
+        cmd: >-
+          wg genkey > {{ firux_wireguard_key_directory }}/{{ item.name }}.key
         creates: "{{ firux_wireguard_key_directory }}/{{ item.name }}.key"
       loop: "{{ firux_wireguard_interfaces }}"
       no_log: true
 
     - name: Calculer les clés publiques WireGuard
       ansible.builtin.shell:
-        cmd: "wg pubkey < {{ firux_wireguard_key_directory }}/{{ item.name }}.key"
+        cmd: >-
+          wg pubkey < {{ firux_wireguard_key_directory }}/{{ item.name }}.key
       loop: "{{ firux_wireguard_interfaces }}"
       register: firux_wireguard_public_keys
       changed_when: false
