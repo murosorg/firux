@@ -1,6 +1,0 @@
----
-firux_frr_enabled: false
-firux_frr_daemons:
-  - zebra
-  - bgpd
-firux_frr_configs: {}

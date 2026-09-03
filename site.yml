@@ -3,11 +3,11 @@
   hosts: grp1
   become: true
   roles:
-    - firux.system
-    - firux.network
-    - firux.nftables
-    - firux.wireguard
-    - firux.strongswan
-    - firux.frr
-    - firux.keepalived
-    - firux.conntrackd
+    - system
+    - network
+    - nftables
+    - wireguard
+    - strongswan
+    - frr
+    - keepalived
+    - conntrackd

@@ -1,7 +1,0 @@
----
-strongswan_packages:
-  - strongswan
-  - strongswan-starter
-  - libcharon-extra-plugins
-firux_strongswan_connections: {}
-firux_strongswan_enabled: false

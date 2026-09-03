@@ -1,0 +1,5 @@
+---
+- name: Recharger nftables
+  ansible.builtin.service:
+    name: "{{ nftables_config.service | default('nftables') }}"
+    state: reloaded

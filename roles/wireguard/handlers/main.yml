@@ -1,0 +1,7 @@
+---
+- name: Redémarrer les tunnels WireGuard
+  ansible.builtin.systemd:
+    name: "wg-quick@{{ item.name }}"
+    enabled: true
+    state: restarted
+  loop: "{{ wireguard_interfaces }}"

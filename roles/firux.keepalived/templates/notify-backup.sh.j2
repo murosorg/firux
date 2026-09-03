@@ -1,4 +1,0 @@
-#!/bin/sh
-{% for tunnel in firux_wireguard_interfaces | default([]) %}
-systemctl stop wg-quick@{{ tunnel.name }}
-{% endfor %}

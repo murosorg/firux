@@ -1,0 +1,7 @@
+---
+strongswan_packages:
+  - strongswan
+  - strongswan-starter
+  - libcharon-extra-plugins
+strongswan_connections: {}
+strongswan_enabled: false

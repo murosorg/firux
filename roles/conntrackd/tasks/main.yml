@@ -1,0 +1,16 @@
+---
+- block:
+    - name: Installer conntrackd
+      ansible.builtin.apt:
+        name: conntrackd
+        state: present
+        update_cache: true
+    - name: Déployer conntrackd
+      ansible.builtin.template:
+        src: conntrackd.conf.j2
+        dest: /etc/conntrackd/conntrackd.conf
+        owner: root
+        group: root
+        mode: "0600"
+      notify: Redémarrer conntrackd
+  when: conntrackd_enabled

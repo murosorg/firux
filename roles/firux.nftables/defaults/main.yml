@@ -1,6 +1,0 @@
----
-firux_nftables_config:
-  vars: {}
-  tables: {}
-  path: /etc/nftables.conf
-  service: nftables

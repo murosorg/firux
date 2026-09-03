@@ -1,0 +1,4 @@
+#!/bin/sh
+{% for tunnel in wireguard_interfaces | default([]) %}
+systemctl stop wg-quick@{{ tunnel.name }}
+{% endfor %}

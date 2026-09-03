@@ -1,0 +1,8 @@
+---
+wireguard_interfaces: []
+wireguard_enabled: false
+wireguard_key_directory: /etc/wireguard
+wireguard_key_mode: standalone
+wireguard_shared_private_key: ""
+wireguard_vip_interface: eth0
+wireguard_vip_address: ""

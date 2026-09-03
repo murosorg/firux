@@ -1,0 +1,5 @@
+---
+network_interfaces: []
+network_routes: []
+network_sysctls:
+  net.ipv4.ip_forward: '1'

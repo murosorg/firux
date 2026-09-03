@@ -1,5 +1,5 @@
 ---
-firux_nftables_config:
+nftables_config:
   vars:
     lan_network: 10.20.10.0/24
     wan_interface: eth0
@@ -51,34 +51,34 @@ firux_nftables_config:
                 iifname $wan_interface tcp dport 80 dnat ip to 10.20.10.10:80
             - raw: >-
                 iifname $wan_interface tcp dport 443 dnat ip to 10.20.10.10:443
-firux_frr_enabled: false
-firux_keepalived_enabled: true
-firux_conntrackd_enabled: true
-firux_strongswan_enabled: true
-firux_frr_daemons: []
-firux_keepalived_virtual_ipaddresses:
+frr_enabled: false
+keepalived_enabled: true
+conntrackd_enabled: true
+strongswan_enabled: true
+frr_daemons: []
+keepalived_virtual_ipaddresses:
   - address: 10.10.10.2
     prefix: 24
     interface: eth0
   - address: 10.20.10.2
     prefix: 24
     interface: eth1
-firux_keepalived_password: firux-ha
-firux_keepalived_ha_interface: eth1
-firux_keepalived_virtual_ip: 10.20.10.2
-firux_keepalived_virtual_ip_prefix: 24
-firux_conntrackd_multicast_address: 239.0.0.1
-firux_keepalived_virtual_ipaddress: >-
-  {{ firux_keepalived_virtual_ip }}/{{ firux_keepalived_virtual_ip_prefix }}
-  dev {{ firux_keepalived_ha_interface }}
+keepalived_password: firux-ha
+keepalived_ha_interface: eth1
+keepalived_virtual_ip: 10.20.10.2
+keepalived_virtual_ip_prefix: 24
+conntrackd_multicast_address: 239.0.0.1
+keepalived_virtual_ipaddress: >-
+  {{ keepalived_virtual_ip }}/{{ keepalived_virtual_ip_prefix }}
+  dev {{ keepalived_ha_interface }}
 
-firux_strongswan_connections: {}
+strongswan_connections: {}
 
-firux_wireguard_enabled: true
-firux_wireguard_vip_address: "10.10.10.2/24"
-firux_wireguard_key_mode: shared
-firux_wireguard_shared_private_key: ""
-firux_wireguard_interfaces:
+wireguard_enabled: true
+wireguard_vip_address: "10.10.10.2/24"
+wireguard_key_mode: shared
+wireguard_shared_private_key: ""
+wireguard_interfaces:
   - name: wg0
     address: 10.100.0.1/30
     listen_port: 51820
