@@ -1,0 +1,26 @@
+#!/usr/sbin/nft -f
+flush ruleset
+{% for name, value in (firux_nftables_config.vars | default({})).items() %}
+define {{ name }} = {{ value }}
+{% endfor %}
+{% for table_name, table in (firux_nftables_config.tables | default({})).items() %}
+table {{ table.type | default('inet') }} {{ table_name }} {
+{% for chain_name, chain in (table.chains | default({})).items() %}
+  chain {{ chain_name }} {
+{% if chain.hook is defined %}
+    type {{ chain.type | default('filter') }} hook {{ chain.hook }} priority {{ chain.priority | default(0) }};
+{% endif %}
+{% if chain.policy is defined %}
+    policy {{ chain.policy }};
+{% endif %}
+{% for rule in chain.rules | default([]) %}
+{% if rule.raw is defined %}
+    {{ rule.raw }}
+{% else %}
+    {% if rule.iifname is defined %}iifname {{ rule.iifname }} {% endif %}{% if rule.iif is defined %}iifname {{ rule.iif }} {% endif %}{% if rule.oif is defined %}oifname {{ rule.oif }} {% endif %}{% if rule.src is defined %}ip saddr {{ rule.src }} {% endif %}{% if rule.dest is defined %}ip daddr {{ rule.dest }} {% endif %}{% if rule.proto is defined %}{{ rule.proto }} {% endif %}{% if rule.port is defined %}dport {% if rule.port is sequence and rule.port is not string %}{ {{ rule.port | join(', ') }} }{% else %}{{ rule.port }}{% endif %} {% endif %}{% if rule.masquerade | default(false) %}masquerade{% elif rule.dnat is defined %}dnat to {{ rule.dnat }}{% elif rule.action is defined %}{{ rule.action }}{% endif %}
+{% endif %}
+{% endfor %}
+  }
+{% endfor %}
+}
+{% endfor %}

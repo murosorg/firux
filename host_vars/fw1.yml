@@ -4,5 +4,5 @@ ansible_user: debian
 firux_keepalived_node_id: fw1
 firux_keepalived_state: MASTER
 firux_keepalived_priority: 110
-firux_keepalived_ha_address: 10.10.10.3
-firux_keepalived_peer_ha_address: 10.10.10.4
+firux_keepalived_ha_address: 10.20.10.1
+firux_keepalived_peer_ha_address: 10.20.10.2

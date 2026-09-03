@@ -1,20 +1,4 @@
 ---
-
 galaxy_info:
-  author: 'Rath Pascal <contact@oxl.at>'
-  namespace: 'firux'
-  license: 'MIT'
-  issue_tracker_url: 'https://github.com/O-X-L/ansible-role-nftables/issues'
-  min_ansible_version: '2.14'
-  description: 'Ansible Role to provision NFTables firewall on linux servers'
-  platforms:
-    - name: Debian
-      versions:
-        - bullseye
-        - bookworm
-        - trixies
-  galaxy_tags:
-    - 'nftables'
-    - 'firewall'
-    - 'filter'
-    - 'network'
+  role_name: nftables
+dependencies: []

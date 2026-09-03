@@ -6,7 +6,7 @@
     - firux.system
     - firux.nftables
     - firux.wireguard
+    - firux.strongswan
     - firux.frr
     - firux.keepalived
     - firux.conntrackd
-    - firux.strongswan
