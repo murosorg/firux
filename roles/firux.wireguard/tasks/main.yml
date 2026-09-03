@@ -139,11 +139,11 @@
     name: "wg-quick@{{ item.name }}"
     state: started
   loop: "{{ firux_wireguard_interfaces }}"
-  when: "'10.10.10.5/24' in firux_wireguard_vip_state.stdout"
+  when: "'10.10.10.2/24' in firux_wireguard_vip_state.stdout"
 
 - name: Arrêter les tunnels sur le firewall passif
   ansible.builtin.systemd:
     name: "wg-quick@{{ item.name }}"
     state: stopped
   loop: "{{ firux_wireguard_interfaces }}"
-  when: "'10.10.10.5/24' not in firux_wireguard_vip_state.stdout"
+  when: "'10.10.10.2/24' not in firux_wireguard_vip_state.stdout"

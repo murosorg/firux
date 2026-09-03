@@ -57,15 +57,15 @@ firux_conntrackd_enabled: true
 firux_strongswan_enabled: true
 firux_frr_daemons: []
 firux_keepalived_virtual_ipaddresses:
-  - address: 10.10.10.5
+  - address: 10.10.10.2
     prefix: 24
     interface: eth0
-  - address: 10.20.10.5
+  - address: 10.20.10.2
     prefix: 24
     interface: eth1
 firux_keepalived_password: firux-ha
 firux_keepalived_ha_interface: eth1
-firux_keepalived_virtual_ip: 10.20.10.5
+firux_keepalived_virtual_ip: 10.20.10.2
 firux_keepalived_virtual_ip_prefix: 24
 firux_conntrackd_multicast_address: 239.0.0.1
 firux_keepalived_virtual_ipaddress: >-
