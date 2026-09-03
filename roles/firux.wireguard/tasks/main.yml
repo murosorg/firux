@@ -1,6 +1,5 @@
 ---
 - block:
-    when: false
     - name: Installer WireGuard
       ansible.builtin.apt:
         name: wireguard-tools

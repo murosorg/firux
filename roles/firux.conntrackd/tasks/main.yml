@@ -1,6 +1,5 @@
 ---
 - block:
-    when: false
     - name: Installer conntrackd
       ansible.builtin.apt:
         name: conntrackd

@@ -1,6 +1,5 @@
 ---
 - block:
-    when: false
     - name: Installer FRR
       ansible.builtin.apt:
         name: frr

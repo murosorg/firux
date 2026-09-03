@@ -1,6 +1,5 @@
 ---
 - block:
-    when: false
     - name: Installer keepalived
       ansible.builtin.apt:
         name: keepalived

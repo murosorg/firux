@@ -1,6 +1,5 @@
 ---
 - block:
-    when: false
     - name: Installer strongSwan
       ansible.builtin.apt:
         name: "{{ strongswan_packages }}"
