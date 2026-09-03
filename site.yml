@@ -1,0 +1,12 @@
+---
+- name: Déployer Firux sur les firewalls Debian 13
+  hosts: grp1
+  become: true
+  roles:
+    - firux.system
+    - firux.nftables
+    - firux.wireguard
+    - firux.frr
+    - firux.keepalived
+    - firux.conntrackd
+    - firux.strongswan

@@ -1,0 +1,2 @@
+---
+firux_frr_daemons: [zebra, bgpd]

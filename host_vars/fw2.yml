@@ -1,0 +1,8 @@
+---
+ansible_host: 10.10.10.4
+ansible_user: debian
+firux_keepalived_node_id: fw2
+firux_keepalived_state: BACKUP
+firux_keepalived_priority: 100
+firux_keepalived_ha_address: 10.10.10.4
+firux_keepalived_peer_ha_address: 10.10.10.3

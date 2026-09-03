@@ -1,0 +1,12 @@
+---
+- name: Installer WireGuard
+  ansible.builtin.apt:
+    name: wireguard-tools
+    state: present
+    update_cache: true
+- name: Activer les interfaces WireGuard
+  ansible.builtin.service:
+    name: "wg-quick@{{ item.name }}"
+    enabled: true
+    state: started
+  loop: "{{ firux_wireguard_interfaces }}"

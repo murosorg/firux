@@ -1,0 +1,16 @@
+---
+- name: Installer strongSwan
+  ansible.builtin.apt:
+    name: "{{ strongswan_packages }}"
+    state: present
+    update_cache: true
+
+- name: Déployer la configuration strongSwan
+  ansible.builtin.template:
+    src: ipsec.conf.j2
+    dest: /etc/ipsec.conf
+    owner: root
+    group: root
+    mode: "0600"
+  when: firux_strongswan_connections | length > 0
+  notify: Redémarrer strongSwan

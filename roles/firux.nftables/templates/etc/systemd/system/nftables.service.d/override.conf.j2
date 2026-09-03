@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+# firux.nftables
+
+[Unit]
+Documentation=https://github.com/O-X-L/ansible-role-nftables
+
+[Service]
+# catch errors at start
+ExecStartPre=/usr/sbin/nft -cf /etc/nftables.conf
+
+# catch errors at reload
+ExecReload=
+ExecReload=/usr/sbin/nft -cf /etc/nftables.conf
+ExecReload=/usr/sbin/nft -f /etc/nftables.conf
+
+# catch errors at restart
+ExecStop=
+ExecStop=/usr/sbin/nft -cf /etc/nftables.conf
+ExecStop=/usr/sbin/nft flush ruleset
+
+Restart=on-failure
+RestartSec=5s

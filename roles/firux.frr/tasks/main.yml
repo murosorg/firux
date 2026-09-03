@@ -1,0 +1,14 @@
+---
+- name: Installer FRR
+  ansible.builtin.apt:
+    name: frr
+    state: present
+    update_cache: true
+- name: Déployer les daemons FRR
+  ansible.builtin.template:
+    src: daemons.j2
+    dest: /etc/frr/daemons
+    owner: frr
+    group: frr
+    mode: "0640"
+  notify: Redémarrer frr

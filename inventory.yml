@@ -1,0 +1,7 @@
+---
+all:
+  children:
+    grp1:
+      hosts:
+        fw1:
+        fw2:

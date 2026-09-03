@@ -1,0 +1,116 @@
+---
+firux_nftables_config:
+  vars:
+    lan_network: 10.10.10.0/24
+    wan_interface: eth0
+    lan_interface: eth1
+  tables:
+    firewall:
+      type: inet
+      chains:
+        input:
+          hook: input
+          policy: drop
+          rules:
+            - {raw: 'ct state invalid drop'}
+            - {raw: 'ct state { established, related } accept'}
+            - {iifname: lo, action: accept}
+            - {proto: icmp, action: accept}
+            - {proto: tcp, port: 22, action: accept}
+        forward:
+          hook: forward
+          policy: drop
+          rules:
+            - {raw: 'ct state invalid drop'}
+            - {raw: 'ct state { established, related } accept'}
+            - {iif: '$lan_interface', oif: '$wan_interface', src: '$lan_network', action: accept}
+            - {iif: '$wan_interface', oif: '$lan_interface', proto: tcp, port: [80, 443], dest: 10.10.10.10, action: accept}
+        output:
+          hook: output
+          policy: accept
+        nat:
+          type: nat
+          chains:
+            postrouting:
+              hook: postrouting
+              type: nat
+              policy: accept
+              rules:
+                - {src: '$lan_network', oif: '$wan_interface', masquerade: true}
+            prerouting:
+              hook: prerouting
+              type: nat
+              policy: accept
+              rules:
+                - {iif: '$wan_interface', proto: tcp, port: 80, dnat: 10.10.10.10:80}
+                - {iif: '$wan_interface', proto: tcp, port: 443, dnat: 10.10.10.10:443}
+firux_wireguard_interfaces: []
+firux_frr_daemons: []
+firux_keepalived_config: |
+  global_defs {
+    router_id {{ firux_keepalived_node_id }}
+    enable_script_security
+  }
+
+  vrrp_instance VI_FIREWALL {
+    state {{ firux_keepalived_state }}
+    interface {{ firux_keepalived_ha_interface }}
+    virtual_router_id 51
+    priority {{ firux_keepalived_priority }}
+    advert_int 1
+
+    unicast_src_ip {{ firux_keepalived_ha_address }}
+    unicast_peer {
+      {{ firux_keepalived_peer_ha_address }}
+    }
+
+    authentication {
+      auth_type PASS
+      auth_pass {{ firux_keepalived_password }}
+    }
+
+    virtual_ipaddress {
+      {{ firux_keepalived_virtual_ip }}/{{ firux_keepalived_virtual_ip_prefix }} dev {{ firux_keepalived_ha_interface }}
+    }
+  }
+firux_conntrackd_config: |
+  Sync {
+    Mode FTFW {
+      DisableExternalCache On
+    }
+    Multicast {
+      IPv4_address {{ firux_conntrackd_multicast_address }}
+      Group 3780
+      IPv4_interface {{ firux_keepalived_ha_address }}
+      Interface {{ firux_keepalived_ha_interface }}
+      SndSocketBuffer 1249280
+      RcvSocketBuffer 1249280
+      Checksum on
+    }
+    HashSize 32768
+    HashLimit PERSISTENT
+  }
+
+  General {
+    Nice -20
+    HashSize 32768
+    HashLimit 65535
+    Syslog daemon
+    LockFile /var/lock/conntrackd.lock
+    UNIX {
+      Path /var/run/conntrackd.sock
+      Backlog 20
+    }
+    SocketBufferSize 1249280
+    SocketBufferSizeMaxGrown 2518560
+    Filter From Userspace {
+      Protocol Accept All
+    }
+  }
+firux_keepalived_password: firux-ha
+firux_keepalived_ha_interface: eth1
+firux_keepalived_virtual_ip: 10.10.10.5
+firux_keepalived_virtual_ip_prefix: 24
+firux_conntrackd_multicast_address: 239.0.0.1
+
+firux_strongswan_connections: {}

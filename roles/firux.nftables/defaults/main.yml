@@ -1,0 +1,77 @@
+---
+NFT_HC:
+  table: {}
+  chain: {}
+  rule: {}
+
+defaults_nftables:
+  enable:
+    sets: true
+    nat: true
+    redir: true
+    reject: false
+    tproxy: false
+    synproxy: false
+    socket: false
+    quota: false
+    tunnel: false
+    connlimit: false
+    table_inet: true
+    table_ip4: true
+    table_ip6: false
+    table_netdev: false
+    table_bridge: false
+    deb11_backport: false
+    bash_completion: false
+  _defaults:
+    table: {}
+    chain: {}
+    rules:
+      _all: []
+  tables: {}
+  vars: {}
+  purge_orphaned: true
+  log_drop_prefix: 'NFTables DROP'
+  log_drop_limit:
+    enable: false
+    count: 100
+  log_group: ''
+  ext: nft
+  path:
+    config_dir: /etc/nftables.d
+    config_file: /etc/nftables.conf
+  incompatible_packages:
+    - iptables
+    - ufw
+
+defaults_table:
+  type: inet
+  chains: {}
+  _defaults:
+    rules:
+      _all: []
+  vars: {}
+  sets: {}
+  counters: {}
+  limits: {}
+
+defaults_chain:
+  type: filter
+  hook: null
+  policy: drop
+  priority: 0
+  counter: true
+  log:
+    drop: true
+    prefix: null
+  rules: []
+  vars: {}
+
+defaults_set:
+  type: ipv4_addr
+  flags: []
+  settings: {}
+  counter: false
+
+firux_nftables_config: {}
+NFT_CONFIG: "{{ defaults_nftables | combine(firux_nftables_config, recursive=true) }}"

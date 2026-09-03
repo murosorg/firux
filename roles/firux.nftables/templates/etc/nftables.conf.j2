@@ -1,0 +1,22 @@
+#!/usr/sbin/nft -f
+
+# {{ ansible_managed }}
+# firux.nftables
+
+flush ruleset
+
+{% if NFT_CONFIG.vars | length > 0 %}
+
+# global vars
+{%   for k, v in NFT_CONFIG.vars.items() %}
+{{ k | nftables_format_var(v) }}
+{%   endfor %}
+{% endif %}
+
+{% if nftables_addons is defined %}
+# BEGIN ANSIBLE MANAGED BLOCK firux.nftables_addons
+include "/etc/nftables.d/addons/*.{{ NFT_CONFIG.ext }}"
+# END ANSIBLE MANAGED BLOCK firux.nftables_addons
+{% endif %}
+
+include "{{ NFT_CONFIG.path.config_dir }}/*.{{ NFT_CONFIG.ext }}"

@@ -1,0 +1,10 @@
+---
+
+# ansible-playbook -K -D -i inventory/hosts.yml playbook.yml
+
+- name: NFTables
+  hosts: all
+  become: true
+  gather_facts: yes
+  roles:
+    - firux.nftables
