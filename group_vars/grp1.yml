@@ -33,6 +33,7 @@ nftables_config:
             - raw: >-
                 iifname $wan_interface oifname $lan_interface
                 tcp dport { 80, 443 } ip daddr 10.20.10.10 accept
+            - raw: iifname "wg0" ip daddr { 10.10.10.0/24, 10.20.10.0/24 } accept
         output:
           hook: output
           policy: accept
@@ -42,6 +43,7 @@ nftables_config:
           policy: accept
           rules:
             - raw: oifname $wan_interface ip saddr $lan_network masquerade
+            - raw: ip saddr 10.100.0.0/30 masquerade
         prerouting:
           type: nat
           hook: prerouting
@@ -83,7 +85,7 @@ wireguard_interfaces:
     address: 10.100.0.1/30
     listen_port: 51820
     peers:
-      - public_key: "FvRKnPiz0bqjABZ3NFOr2pC5VvyGPCC3cStVcR9ocCM="
+      - public_key: "Th4iePA5MCx60pmIkfTN0RFbuLBiaaD+s08+Bwm/enA="
         allowed_ips:
           - 10.100.0.2/32
         persistent_keepalive: 25
