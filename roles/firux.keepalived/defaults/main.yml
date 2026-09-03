@@ -1,2 +1,3 @@
 ---
 firux_keepalived_config: ''
+firux_keepalived_enabled: false

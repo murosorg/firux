@@ -23,8 +23,12 @@ firux_nftables_config:
           rules:
             - raw: ct state invalid drop
             - raw: ct state { established, related } accept
-            - raw: iifname $lan_interface oifname $wan_interface ip saddr $lan_network accept
-            - raw: iifname $wan_interface oifname $lan_interface tcp dport { 80, 443 } ip daddr 10.20.10.10 accept
+            - raw: >-
+                iifname $lan_interface oifname $wan_interface
+                ip saddr $lan_network accept
+            - raw: >-
+                iifname $wan_interface oifname $lan_interface
+                tcp dport { 80, 443 } ip daddr 10.20.10.10 accept
         output:
           hook: output
           policy: accept
@@ -39,9 +43,16 @@ firux_nftables_config:
           hook: prerouting
           policy: accept
           rules:
-            - raw: iifname $wan_interface tcp dport 80 dnat to 10.20.10.10:80
-            - raw: iifname $wan_interface tcp dport 443 dnat to 10.20.10.10:443
+            - raw: >-
+                iifname $wan_interface tcp dport 80 dnat ip to 10.20.10.10:80
+            - raw: >-
+                iifname $wan_interface tcp dport 443 dnat ip to 10.20.10.10:443
 firux_wireguard_interfaces: []
+firux_wireguard_enabled: false
+firux_frr_enabled: false
+firux_keepalived_enabled: true
+firux_conntrackd_enabled: true
+firux_strongswan_enabled: false
 firux_frr_daemons: []
 firux_keepalived_config: |
   global_defs {
@@ -67,8 +78,7 @@ firux_keepalived_config: |
     }
 
     virtual_ipaddress {
-      {{ firux_keepalived_virtual_ip }}/{{ firux_keepalived_virtual_ip_prefix }}
-      dev {{ firux_keepalived_ha_interface }}
+      {{ firux_keepalived_virtual_ipaddress }}
     }
   }
 firux_conntrackd_config: |
@@ -85,24 +95,22 @@ firux_conntrackd_config: |
       RcvSocketBuffer 1249280
       Checksum on
     }
-    HashSize 32768
-    HashLimit PERSISTENT
   }
 
   General {
-    Nice -20
     HashSize 32768
     HashLimit 65535
     Syslog daemon
     LockFile /var/lock/conntrackd.lock
     UNIX {
       Path /var/run/conntrackd.sock
-      Backlog 20
     }
     SocketBufferSize 1249280
     SocketBufferSizeMaxGrown 2518560
     Filter From Userspace {
-      Protocol Accept All
+      Protocol Accept {
+        All
+      }
     }
   }
 firux_keepalived_password: firux-ha
@@ -110,5 +118,8 @@ firux_keepalived_ha_interface: eth1
 firux_keepalived_virtual_ip: 10.20.10.5
 firux_keepalived_virtual_ip_prefix: 24
 firux_conntrackd_multicast_address: 239.0.0.1
+firux_keepalived_virtual_ipaddress: >-
+  {{ firux_keepalived_virtual_ip }}/{{ firux_keepalived_virtual_ip_prefix }}
+  dev {{ firux_keepalived_ha_interface }}
 
 firux_strongswan_connections: {}

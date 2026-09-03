@@ -5,8 +5,13 @@
   roles:
     - firux.system
     - firux.nftables
-    - firux.wireguard
-    - firux.strongswan
-    - firux.frr
-    - firux.keepalived
-    - firux.conntrackd
+    - role: firux.wireguard
+      when: firux_wireguard_enabled
+    - role: firux.strongswan
+      when: firux_strongswan_enabled
+    - role: firux.frr
+      when: firux_frr_enabled
+    - role: firux.keepalived
+      when: firux_keepalived_enabled
+    - role: firux.conntrackd
+      when: firux_conntrackd_enabled

@@ -1,2 +1,3 @@
 ---
 firux_wireguard_interfaces: []
+firux_wireguard_enabled: false
