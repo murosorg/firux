@@ -6,6 +6,16 @@
         state: present
         update_cache: true
 
+    - name: Déployer les secrets strongSwan
+      ansible.builtin.template:
+        src: ipsec.secrets.j2
+        dest: /etc/ipsec.secrets
+        owner: root
+        group: root
+        mode: "0600"
+      when: firux_strongswan_connections | length > 0
+      notify: Redémarrer strongSwan
+
     - name: Déployer la configuration strongSwan
       ansible.builtin.template:
         src: ipsec.conf.j2

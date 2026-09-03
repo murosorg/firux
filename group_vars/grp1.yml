@@ -54,7 +54,7 @@ firux_nftables_config:
 firux_frr_enabled: false
 firux_keepalived_enabled: true
 firux_conntrackd_enabled: true
-firux_strongswan_enabled: false
+firux_strongswan_enabled: true
 firux_frr_daemons: []
 firux_keepalived_virtual_ipaddresses:
   - address: 10.10.10.5
