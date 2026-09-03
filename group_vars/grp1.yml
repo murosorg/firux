@@ -19,6 +19,8 @@ firux_nftables_config:
             - raw: tcp dport 22 accept
             - raw: iifname $lan_interface ip protocol 112 accept
             - raw: iifname $lan_interface udp dport 3780 accept
+            - raw: iifname $wan_interface udp dport 51820 accept
+            - raw: iifname $lan_interface udp dport 51820 accept
         forward:
           hook: forward
           policy: drop
@@ -49,8 +51,6 @@ firux_nftables_config:
                 iifname $wan_interface tcp dport 80 dnat ip to 10.20.10.10:80
             - raw: >-
                 iifname $wan_interface tcp dport 443 dnat ip to 10.20.10.10:443
-firux_wireguard_interfaces: []
-firux_wireguard_enabled: false
 firux_frr_enabled: false
 firux_keepalived_enabled: true
 firux_conntrackd_enabled: true
@@ -73,9 +73,9 @@ firux_wireguard_interfaces:
   - name: wg0
     address: 10.100.0.1/30
     listen_port: 51820
-    # peers:
-    #   - public_key: "CLE_PUBLIQUE_PEER"
-    #     allowed_ips:
-    #       - 10.100.0.2/32
-    #     endpoint: 203.0.113.10:51820
-    #     persistent_keepalive: 25
+    peers:
+      - public_key: "Th4iePA5MCx60pmIkfTN0RFbuLBiaaD+s08+Bwm/enA="
+        allowed_ips:
+          - 10.100.0.2/32
+        endpoint: 203.0.113.10:51820
+        persistent_keepalive: 25
