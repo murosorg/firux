@@ -33,7 +33,12 @@ nftables_config:
             - raw: >-
                 iifname $wan_interface oifname $lan_interface
                 tcp dport { 80, 443 } ip daddr 10.20.10.10 accept
-            - raw: iifname "wg0" ip daddr { 10.10.10.0/24, 10.20.10.0/24 } accept
+            - raw: >-
+                iifname "wg0" oifname $wan_interface
+                ip daddr 10.10.10.0/24 accept
+            - raw: >-
+                iifname "wg0" oifname $lan_interface
+                ip daddr 10.20.10.0/24 accept
         output:
           hook: output
           policy: accept
