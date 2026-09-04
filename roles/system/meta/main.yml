@@ -1,6 +1,0 @@
----
-galaxy_info:
-  author: JeromeP
-  description: Firewall Debian 13
-  license: MIT
-  min_ansible_version: '2.15'
