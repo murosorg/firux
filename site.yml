@@ -8,5 +8,5 @@
     - wireguard
     - strongswan
     - frr
-    - keepalived
     - conntrackd
+    - keepalived

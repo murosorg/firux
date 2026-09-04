@@ -1,6 +1,4 @@
 ---
-ansible_host: 10.10.10.4
-ansible_user: debian
 keepalived_node_id: fw2
 keepalived_state: BACKUP
 keepalived_priority: 100

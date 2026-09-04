@@ -1,6 +1,5 @@
   Sync {
     Mode FTFW {
-      DisableExternalCache On
     }
     Multicast {
       IPv4_address {{ conntrackd_multicast_address }}
@@ -29,6 +28,10 @@
         UDP
         SCTP
         DCCP
+      }
+      Address Ignore {
+        IPv4_address 127.0.0.1
+        IPv4_address 239.0.0.1
       }
     }
   }

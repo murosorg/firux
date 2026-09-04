@@ -1,6 +1,4 @@
 ---
-ansible_host: 10.10.10.3
-ansible_user: debian
 keepalived_node_id: fw1
 keepalived_state: MASTER
 keepalived_priority: 110
