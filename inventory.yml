@@ -5,3 +5,18 @@ all:
       hosts:
         fw1:
         fw2:
+    web:
+      hosts:
+        web01:
+          ansible_host: 10.20.10.10
+          ansible_user: debian
+    mail:
+      hosts:
+        postfix:
+          ansible_host: 10.20.10.80
+          ansible_user: debian
+    proxmox:
+      hosts:
+        proxmox:
+          ansible_host: 10.10.10.1
+          ansible_user: root

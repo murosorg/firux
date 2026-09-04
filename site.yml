@@ -3,7 +3,6 @@
   hosts: grp1
   become: true
   roles:
-    - system
     - network
     - nftables
     - wireguard

@@ -1,8 +1,0 @@
----
-galaxy_info:
-  author: Ecritel
-  description: Socle de firewall périmétrique Debian 13
-  min_ansible_version: "2.15"
-  platforms:
-    - name: Debian
-      versions: [trixie]

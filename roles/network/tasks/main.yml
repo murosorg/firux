@@ -1,4 +1,10 @@
 ---
+- name: Vérifier Debian 13
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.os_family == "Debian"
+      - ansible_facts.distribution_major_version | int == 13
+
 - name: Créer le répertoire systemd-networkd
   ansible.builtin.file:
     path: /etc/systemd/network
