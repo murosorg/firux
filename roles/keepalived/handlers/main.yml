@@ -2,4 +2,4 @@
 - name: Redémarrer keepalived
   ansible.builtin.service:
     name: keepalived
-    state: restarted
+    state: reloaded
