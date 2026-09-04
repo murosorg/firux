@@ -1,5 +1,5 @@
 ---
-- name: Déployer Firux sur les firewalls Debian 13
+- name: Déployer les firewalls Debian 13
   hosts: grp1
   become: true
   roles:

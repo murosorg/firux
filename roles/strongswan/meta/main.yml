@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: Ecritel
-  description: Gestion des tunnels IPsec strongSwan pour Firux
+  description: Gestion des tunnels IPsec strongSwan
   min_ansible_version: "2.15"
   platforms:
     - name: Debian

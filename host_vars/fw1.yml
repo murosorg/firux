@@ -17,7 +17,7 @@ strongswan_connections:
     right: 10.10.10.4
     rightsubnet: 10.30.2.0/24
     authby: psk
-    psk: "firux-test-psk-change-me"
+    psk: "test-psk-change-me"
 
 network_interfaces:
   - name: eth0
