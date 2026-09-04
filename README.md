@@ -1,111 +1,29 @@
 # debian-firewall
 
-Ansible roles to deploy stateful perimeter firewalls on Debian 13 (Trixie), with optional HA clustering.
+Ansible roles to deploy stateful perimeter firewalls on Debian 13.
 
-## Features
+This project was born from a simple observation: most open-source firewall projects either rely on proprietary appliances, complex web UIs, or opinionated distributions that hide what is actually happening underneath.
 
-- nftables stateful firewall with sane defaults
-- High Availability via Keepalived VRRP
-- Session synchronization via conntrackd
-- WireGuard VPN (standalone or HA-aware)
-- IPsec VPN via strongSwan (standalone or HA-aware)
-- Dynamic routing via FRRouting (OSPF, BGP)
-- systemd-networkd network configuration
-- Fully idempotent Ansible roles
-- ansible-lint and yamllint compliant
+This project takes a different approach. It uses plain Debian 13 with nftables, and exposes the full configuration through standard Ansible roles. No abstraction layer, no GUI, no magic. Just a clean, auditable, reproducible firewall that you control entirely.
 
-## Requirements
-
-- Debian 13 (Trixie)
-- Ansible >= 2.15
-- Python >= 3.11
+It supports both standalone and HA cluster deployments, with WireGuard and IPsec VPN, dynamic routing via FRRouting, and stateful session synchronization via conntrackd.
 
 ## Roles
 
 | Role | Description |
 |------|-------------|
-| `system` | Base system checks and assertions |
-| `network` | Interfaces, routes and sysctl via systemd-networkd |
-| `nftables` | Stateful firewall rules with built-in protection |
+| `network` | Base Debian 13 assertions, interfaces, routes and sysctl via systemd-networkd |
+| `nftables` | Stateful firewall with built-in protection defaults |
 | `keepalived` | VRRP high availability |
 | `conntrackd` | Connection state synchronization |
-| `wireguard` | WireGuard VPN tunnels |
-| `strongswan` | IPsec VPN tunnels |
-| `frr` | Dynamic routing (OSPF, BGP) |
+| `wireguard` | WireGuard VPN, HA-aware |
+| `strongswan` | IPsec VPN, HA-aware |
+| `frr` | Dynamic routing: OSPF, BGP |
 
-## Quick Start
+## Requirements
 
-```bash
-git clone https://github.com/ecritel/debian-firewall
-cd debian-firewall
-cp inventory.yml.example inventory.yml
-cp group_vars/example.yml group_vars/all.yml
-ansible-playbook -i inventory.yml site.yml
-```
-
-## Architecture
-
-### Standalone firewall
-
-```yaml
-keepalived_enabled: false
-wireguard_enabled: true
-nftables_enabled: true
-```
-
-### HA cluster
-
-```yaml
-keepalived_enabled: true
-conntrackd_enabled: true
-wireguard_enabled: true
-nftables_enabled: true
-```
-
-When `keepalived_enabled: true`:
-- WireGuard tunnels are managed by Keepalived notify scripts
-- strongSwan tunnels are managed by Keepalived notify scripts
-- conntrackd synchronizes connection states between firewalls
-- The MASTER firewall starts VPN services, the BACKUP stops them
-
-## nftables Default Rules
-
-The `nftables` role automatically injects the following rules before any custom rules:
-
-**input chain:**
-- Drop invalid packets
-- Accept established/related connections
-- Accept loopback
-- ICMP rate limit (10/s burst 20)
-- Drop IP fragments
-- SYN flood protection (100/s burst 200)
-- SSH rate limit (10/min burst 5)
-
-**forward chain:**
-- Drop invalid packets
-- Accept established/related connections
-- Drop IP fragments
-
-## Adding a NAT rule
-
-In `group_vars` or `host_vars`:
-
-```yaml
-nftables_config:
-  tables:
-    firewall:
-      chains:
-        prerouting:
-          rules:
-            - raw: >-
-                iifname $wan_interface tcp dport 443
-                dnat ip to 10.0.0.10:443
-        forward:
-          rules:
-            - raw: >-
-                iifname $wan_interface oifname $lan_interface
-                tcp dport 443 ip daddr 10.0.0.10 accept
-```
+- Debian 13 (Trixie)
+- Ansible >= 2.15
 
 ## License
 
