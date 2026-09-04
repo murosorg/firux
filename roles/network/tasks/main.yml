@@ -34,11 +34,11 @@
     mode: '0644'
   notify: Redémarrer systemd-networkd
 
-- name: Activer le routage IPv4
-  ansible.posix.sysctl:
-    name: '{{ item.key }}'
-    value: '{{ item.value }}'
-    state: present
-    sysctl_set: true
-    reload: true
-  loop: '{{ network_sysctls | dict2items }}'
+- name: Configurer les paramètres sysctl persistants
+  ansible.builtin.template:
+    src: 99-firux-network.conf.j2
+    dest: /etc/sysctl.d/99-firux-network.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Recharger les paramètres sysctl

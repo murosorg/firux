@@ -4,3 +4,7 @@
     name: systemd-networkd
     state: restarted
     enabled: true
+
+- name: Recharger les paramètres sysctl
+  ansible.builtin.command: sysctl --system
+  changed_when: true
