@@ -12,6 +12,7 @@ nftables_config:
           hook: input
           policy: drop
           rules:
+            - raw: ip protocol ospf accept
             - raw: iifname $lan_interface ip protocol 112 accept
             - raw: iifname $lan_interface udp dport 3780 accept
             - raw: iifname $wan_interface udp dport 51820 accept

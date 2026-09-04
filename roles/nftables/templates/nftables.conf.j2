@@ -8,7 +8,7 @@ table {{ table.type | default("inet") }} {{ table_name }} {
 {% for chain_name, chain in (table.chains | default({})).items() %}
   chain {{ chain_name }} {
 {% if chain.hook is defined %}
-    type {{ chain.type | default("filter") }} hook {{ chain.hook }} priority {% if chain.priority is defined %}{{ chain.priority }}{% elif chain.type | default("filter") == "nat" and chain.hook == "prerouting" %}dstnat{% else %}filter{% endif %};
+    type {{ chain.type | default("filter") }} hook {{ chain.hook }} priority {% if chain.priority is defined %}{{ chain.priority }}{% elif chain.type | default('filter') == 'nat' and chain.hook == 'prerouting' %}dstnat{% elif chain.type | default('filter') == 'nat' and chain.hook == 'postrouting' %}srcnat{% else %}filter{% endif %};
 {% endif %}
 {% if chain.policy is defined %}
     policy {{ chain.policy }};

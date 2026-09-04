@@ -26,3 +26,14 @@ network_interfaces:
     address: 10.20.10.3
     netmask: 255.255.255.0
 network_routes: []
+
+frr_enabled: true
+frr_daemons:
+  - zebra
+  - ospfd
+frr_configs:
+  ospf: |
+    router ospf
+      ospf router-id 10.10.10.3
+      network 10.10.10.0/24 area 0
+      passive-interface eth1
