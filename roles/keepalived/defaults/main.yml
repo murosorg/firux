@@ -1,3 +1,5 @@
 ---
 keepalived_config: ''
 keepalived_enabled: false
+keepalived_state: BACKUP
+keepalived_nopreempt: true
