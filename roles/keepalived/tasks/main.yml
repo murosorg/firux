@@ -9,7 +9,7 @@
     - name: Déployer le script keepalived MASTER
       ansible.builtin.template:
         src: notify-master.sh.j2
-        dest: /usr/local/sbin/firux-keepalived-master
+        dest: /usr/local/sbin/keepalived-master
         owner: root
         group: root
         mode: "0750"
@@ -17,7 +17,7 @@
     - name: Déployer le script keepalived BACKUP
       ansible.builtin.template:
         src: notify-backup.sh.j2
-        dest: /usr/local/sbin/firux-keepalived-backup
+        dest: /usr/local/sbin/keepalived-backup
         owner: root
         group: root
         mode: "0750"

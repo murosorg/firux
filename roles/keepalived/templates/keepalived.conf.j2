@@ -21,10 +21,10 @@
       auth_pass {{ keepalived_password }}
     }
 
-    notify_master "/usr/local/sbin/firux-keepalived-master"
-    notify_backup "/usr/local/sbin/firux-keepalived-backup"
-    notify_stop "/usr/local/sbin/firux-keepalived-backup"
-    notify_fault "/usr/local/sbin/firux-keepalived-backup"
+    notify_master "/usr/local/sbin/keepalived-master"
+    notify_backup "/usr/local/sbin/keepalived-backup"
+    notify_stop "/usr/local/sbin/keepalived-backup"
+    notify_fault "/usr/local/sbin/keepalived-backup"
 
     virtual_ipaddress {
 {% for vip in keepalived_virtual_ipaddresses %}
