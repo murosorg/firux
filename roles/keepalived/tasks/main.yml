@@ -1,5 +1,8 @@
 ---
-- block:
+- name: Configurer keepalived
+  when:
+    - keepalived_enabled
+  block:
     - name: Installer keepalived
       ansible.builtin.apt:
         name: keepalived
@@ -31,4 +34,11 @@
         mode: "0600"
         validate: keepalived --config-test --use-file %s
       notify: Redémarrer keepalived
-  when: keepalived_enabled
+
+- name: S'assurer que keepalived est démarré et activé
+  ansible.builtin.systemd:
+    name: keepalived
+    state: started
+    enabled: true
+  when:
+    - keepalived_enabled

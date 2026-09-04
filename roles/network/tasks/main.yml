@@ -42,3 +42,17 @@
     group: root
     mode: '0644'
   notify: Recharger les paramètres sysctl
+
+- name: Appliquer immédiatement les handlers réseau
+  ansible.builtin.meta: flush_handlers
+
+- name: S'assurer que systemd-networkd est actif
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: started
+    enabled: true
+
+- name: Attendre que les interfaces réseau soient disponibles
+  ansible.builtin.wait_for:
+    path: /sys/class/net/eth1
+    timeout: 30

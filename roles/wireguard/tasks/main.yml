@@ -1,5 +1,7 @@
 ---
-- block:
+- name: Configurer WireGuard
+  when: wireguard_enabled
+  block:
     - name: Installer WireGuard
       ansible.builtin.apt:
         name: wireguard-tools
@@ -120,17 +122,29 @@
         mode: "0600"
       loop: "{{ wireguard_interfaces }}"
 
-  when: wireguard_enabled
+- name: Activer et démarrer les tunnels WireGuard (standalone)
+  ansible.builtin.systemd:
+    name: "wg-quick@{{ item.name }}"
+    state: started
+    enabled: true
+  loop: "{{ wireguard_interfaces }}"
+  when:
+    - wireguard_enabled
+    - not keepalived_enabled
 
-- name: Vérifier la présence de la VIP WAN
+- name: Vérifier la présence de la VIP WAN (HA)
   ansible.builtin.command:
     cmd: "ip -4 addr show dev {{ wireguard_vip_interface }}"
   register: wireguard_vip_state
   changed_when: false
+  when:
+    - wireguard_enabled
 
-- name: Gérer les tunnels WireGuard selon le rôle du firewall
+- name: Gérer les tunnels WireGuard selon le rôle du firewall (HA)
   ansible.builtin.systemd:
     name: "wg-quick@{{ item.name }}"
     state: "{{ 'started' if wireguard_vip_address in wireguard_vip_state.stdout else 'stopped' }}"
     enabled: false
   loop: "{{ wireguard_interfaces }}"
+  when:
+    - wireguard_enabled

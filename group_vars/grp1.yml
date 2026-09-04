@@ -1,4 +1,9 @@
 ---
+keepalived_enabled: true
+conntrackd_enabled: true
+strongswan_enabled: true
+wireguard_enabled: true
+
 nftables_config:
   vars:
     lan_network: 10.20.10.0/24
@@ -59,11 +64,7 @@ nftables_config:
             - raw: >-
                 iifname $wan_interface tcp dport { 25, 465, 587, 993 }
                 dnat ip to 10.20.10.80
-frr_enabled: false
-keepalived_enabled: true
-conntrackd_enabled: true
-strongswan_enabled: true
-frr_daemons: []
+
 keepalived_virtual_ipaddresses:
   - address: 10.10.10.2
     prefix: 24
@@ -80,9 +81,6 @@ keepalived_virtual_ipaddress: >-
   {{ keepalived_virtual_ip }}/{{ keepalived_virtual_ip_prefix }}
   dev {{ keepalived_ha_interface }}
 
-strongswan_connections: {}
-
-wireguard_enabled: true
 wireguard_vip_address: "10.10.10.2/24"
 wireguard_key_mode: shared
 wireguard_shared_private_key: ""

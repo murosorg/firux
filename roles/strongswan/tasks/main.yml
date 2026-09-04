@@ -1,5 +1,6 @@
 ---
-- block:
+- name: Configurer strongSwan
+  block:
     - name: Installer strongSwan
       ansible.builtin.apt:
         name: "{{ strongswan_packages }}"
@@ -25,4 +26,21 @@
         mode: "0600"
       when: strongswan_connections | length > 0
       notify: Redémarrer strongSwan
-  when: strongswan_enabled
+
+- name: Activer strongswan au boot (standalone)
+  ansible.builtin.systemd:
+    name: strongswan-starter
+    state: started
+    enabled: true
+  when:
+    - strongswan_enabled
+    - not keepalived_enabled
+
+- name: Désactiver strongswan au boot (HA)
+  ansible.builtin.systemd:
+    name: strongswan-starter
+    state: stopped
+    enabled: false
+  when:
+    - strongswan_enabled
+    - keepalived_enabled

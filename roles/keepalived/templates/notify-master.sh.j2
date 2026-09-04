@@ -2,3 +2,6 @@
 {% for tunnel in wireguard_interfaces | default([]) %}
 systemctl start wg-quick@{{ tunnel.name }}
 {% endfor %}
+{% if strongswan_enabled | default(false) %}
+systemctl start strongswan-starter
+{% endif %}

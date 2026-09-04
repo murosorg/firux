@@ -1,5 +1,8 @@
 ---
-- block:
+- name: Configurer conntrackd
+  when:
+    - conntrackd_enabled
+  block:
     - name: Installer conntrackd
       ansible.builtin.apt:
         name: conntrackd
@@ -13,4 +16,9 @@
         group: root
         mode: "0600"
       notify: Redémarrer conntrackd
-  when: conntrackd_enabled
+
+- name: S'assurer que conntrackd est démarré et activé
+  ansible.builtin.systemd:
+    name: conntrackd
+    state: started
+    enabled: true

@@ -1,8 +1,6 @@
 ---
 galaxy_info:
-  author: Ecritel
-  description: Gestion des tunnels IPsec strongSwan
-  min_ansible_version: "2.15"
-  platforms:
-    - name: Debian
-      versions: [trixie]
+  author: JeromeP
+  description: Firewall Debian 13
+  license: MIT
+  min_ansible_version: '2.15'

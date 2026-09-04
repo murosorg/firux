@@ -20,3 +20,10 @@
     name: "{{ nftables_config.service | default('nftables') }}"
     enabled: true
     state: started
+
+- name: S'assurer que nftables est démarré et activé
+  ansible.builtin.systemd:
+    name: nftables
+    state: started
+    enabled: true
+  when: nftables_enabled

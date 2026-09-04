@@ -1,5 +1,6 @@
 ---
-- block:
+- name: Configurer FRR
+  block:
     - name: Installer FRR
       ansible.builtin.apt:
         name: frr
@@ -21,4 +22,10 @@
         group: frr
         mode: "0640"
       notify: Redémarrer frr
+
+- name: S'assurer que frr est démarré et activé
+  ansible.builtin.systemd:
+    name: frr
+    state: started
+    enabled: true
   when: frr_enabled
