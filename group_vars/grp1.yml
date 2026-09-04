@@ -12,11 +12,6 @@ nftables_config:
           hook: input
           policy: drop
           rules:
-            - raw: ct state invalid drop
-            - raw: ct state { established, related } accept
-            - raw: iifname lo accept
-            - raw: ip protocol icmp accept
-            - raw: tcp dport 22 accept
             - raw: iifname $lan_interface ip protocol 112 accept
             - raw: iifname $lan_interface udp dport 3780 accept
             - raw: iifname $wan_interface udp dport 51820 accept
@@ -25,8 +20,6 @@ nftables_config:
           hook: forward
           policy: drop
           rules:
-            - raw: ct state invalid drop
-            - raw: ct state { established, related } accept
             - raw: >-
                 iifname $lan_interface oifname $wan_interface
                 ip saddr $lan_network accept

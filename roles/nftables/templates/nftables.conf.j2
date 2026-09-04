@@ -4,20 +4,27 @@ flush ruleset
 define {{ name }} = {{ value }}
 {% endfor %}
 {% for table_name, table in (nftables_config.tables | default({})).items() %}
-table {{ table.type | default('inet') }} {{ table_name }} {
+table {{ table.type | default("inet") }} {{ table_name }} {
 {% for chain_name, chain in (table.chains | default({})).items() %}
   chain {{ chain_name }} {
 {% if chain.hook is defined %}
-    type {{ chain.type | default('filter') }} hook {{ chain.hook }} priority {% if chain.priority is defined %}{{ chain.priority }}{% elif chain.type | default('filter') == 'nat' and chain.hook == 'prerouting' %}dstnat{% else %}filter{% endif %};
+    type {{ chain.type | default("filter") }} hook {{ chain.hook }} priority {% if chain.priority is defined %}{{ chain.priority }}{% elif chain.type | default("filter") == "nat" and chain.hook == "prerouting" %}dstnat{% else %}filter{% endif %};
 {% endif %}
 {% if chain.policy is defined %}
     policy {{ chain.policy }};
 {% endif %}
+{% if chain.hook == "input" and chain.type | default("filter") != "nat" %}
+{% for rule in nftables_default_input_rules %}
+    {{ rule }}
+{% endfor %}
+{% elif chain.hook == "forward" and chain.type | default("filter") != "nat" %}
+{% for rule in nftables_default_forward_rules %}
+    {{ rule }}
+{% endfor %}
+{% endif %}
 {% for rule in chain.rules | default([]) %}
 {% if rule.raw is defined %}
     {{ rule.raw }}
-{% else %}
-    {% if rule.iifname is defined %}iifname {{ rule.iifname }} {% endif %}{% if rule.iif is defined %}iifname {{ rule.iif }} {% endif %}{% if rule.oif is defined %}oifname {{ rule.oif }} {% endif %}{% if rule.src is defined %}ip saddr {{ rule.src }} {% endif %}{% if rule.dest is defined %}ip daddr {{ rule.dest }} {% endif %}{% if rule.proto is defined %}{{ rule.proto }} {% endif %}{% if rule.port is defined %}dport {% if rule.port is sequence and rule.port is not string %}{ {{ rule.port | join(', ') }} }{% else %}{{ rule.port }}{% endif %} {% endif %}{% if rule.masquerade | default(false) %}masquerade{% elif rule.dnat is defined %}dnat to {{ rule.dnat }}{% elif rule.action is defined %}{{ rule.action }}{% endif %}
 {% endif %}
 {% endfor %}
   }

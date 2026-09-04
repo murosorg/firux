@@ -4,3 +4,20 @@ nftables_config:
   tables: {}
   path: /etc/nftables.conf
   service: nftables
+
+nftables_default_input_rules:
+  - ct state invalid drop
+  - ct state { established, related } accept
+  - iifname lo accept
+  - ip protocol icmp limit rate 10/second burst 20 packets accept
+  - ip protocol icmp drop
+  - ip frag-off & 0x1fff != 0 drop
+  - tcp flags & (fin|syn|rst|ack) == syn limit rate 100/second burst 200 packets accept
+  - tcp flags & (fin|syn|rst|ack) == syn drop
+  - tcp dport 22 limit rate 10/minute burst 5 packets accept
+  - tcp dport 22 drop
+
+nftables_default_forward_rules:
+  - ct state invalid drop
+  - ct state { established, related } accept
+  - ip frag-off & 0x1fff != 0 drop
