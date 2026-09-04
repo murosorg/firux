@@ -7,6 +7,7 @@
         name: wireguard-tools
         state: present
         update_cache: true
+
     - name: Create WireGuard directory
       ansible.builtin.file:
         path: "{{ wireguard_key_directory }}"
@@ -15,88 +16,77 @@
         group: root
         mode: "0700"
 
-    - name: Generate HA key on primary firewall
+    # Provided key, per tunnel
+    - name: Deploy provided private key
+      ansible.builtin.copy:
+        content: "{{ item.private_key }}\n"
+        dest: "{{ wireguard_key_directory }}/{{ item.name }}.key"
+        owner: root
+        group: root
+        mode: "0600"
+      loop: "{{ wireguard_interfaces }}"
+      when: item.private_key is defined and item.private_key | length > 0
+      no_log: true
+
+    # No provided key, HA: generate on primary, copy to secondary
+    - name: Generate cluster private key on primary
       ansible.builtin.shell:
-        cmd: >-
-          wg genkey > {{ wireguard_key_directory }}/{{ item.name }}.key
+        cmd: "wg genkey > {{ wireguard_key_directory }}/{{ item.name }}.key"
         creates: "{{ wireguard_key_directory }}/{{ item.name }}.key"
       loop: "{{ wireguard_interfaces }}"
       when:
-        - wireguard_key_mode == "shared"
-        - wireguard_shared_private_key | length == 0
-        - inventory_hostname == ansible_play_hosts_all[0]
+        - item.private_key is not defined or item.private_key | length == 0
+        - inventory_hostname == wireguard_ha_primary
+        - keepalived_enabled
       no_log: true
 
-    - name: Read HA key from primary firewall
+    - name: Fetch cluster private key from primary
       ansible.builtin.slurp:
         src: "{{ wireguard_key_directory }}/{{ item.name }}.key"
+      register: wireguard_primary_keys
       loop: "{{ wireguard_interfaces }}"
       when:
-        - wireguard_key_mode == "shared"
-        - wireguard_shared_private_key | length == 0
-      delegate_to: "{{ ansible_play_hosts_all[0] }}"
-      run_once: true
-      register: wireguard_primary_key
+        - item.private_key is not defined or item.private_key | length == 0
+        - inventory_hostname != wireguard_ha_primary
+        - keepalived_enabled
+      delegate_to: "{{ wireguard_ha_primary }}"
+      run_once: false
       no_log: true
 
-    - name: Assert WireGuard key configuration
-      ansible.builtin.assert:
-        that:
-          - wireguard_key_mode in ["standalone", "shared"]
-
-    - name: Deploy provided WireGuard HA key
+    - name: Deploy cluster private key on secondary
       ansible.builtin.copy:
-        content: "{{ wireguard_shared_private_key }}\n"
-        dest: "{{ wireguard_key_directory }}/{{ item.name }}.key"
+        content: "{{ item.stdout }}\n"
+        dest: "{{ wireguard_key_directory }}/{{ item.item.name }}.key"
         owner: root
         group: root
         mode: "0600"
-      loop: "{{ wireguard_interfaces }}"
+      loop: "{{ wireguard_primary_keys.results }}"
       when:
-        - wireguard_key_mode == "shared"
-        - wireguard_shared_private_key | length > 0
+        - item.private_key is not defined or item.private_key | length == 0
+        - inventory_hostname != wireguard_ha_primary
+        - keepalived_enabled
       no_log: true
 
-    - name: Deploy generated WireGuard HA key
-      ansible.builtin.copy:
-        content: >-
-          {{ wireguard_primary_key.results[index].content | b64decode }}
-        dest: "{{ wireguard_key_directory }}/{{ item.name }}.key"
-        owner: root
-        group: root
-        mode: "0600"
-      loop: "{{ wireguard_interfaces }}"
-      loop_control:
-        index_var: index
-      when:
-        - wireguard_key_mode == "shared"
-        - wireguard_shared_private_key | length == 0
-      no_log: true
-
-    - name: Check WireGuard private keys
-      ansible.builtin.stat:
-        path: "{{ wireguard_key_directory }}/{{ item.name }}.key"
-      loop: "{{ wireguard_interfaces }}"
-      register: wireguard_key_stats
-
-    - name: Generate WireGuard private keys
+    # Standalone: generate locally per host
+    - name: Generate private key locally
       ansible.builtin.shell:
-        cmd: >-
-          wg genkey > {{ wireguard_key_directory }}/{{ item.name }}.key
+        cmd: "wg genkey > {{ wireguard_key_directory }}/{{ item.name }}.key"
         creates: "{{ wireguard_key_directory }}/{{ item.name }}.key"
       loop: "{{ wireguard_interfaces }}"
+      when:
+        - item.private_key is not defined or item.private_key | length == 0
+        - not keepalived_enabled
       no_log: true
 
-    - name: Compute WireGuard public keys
+    - name: Compute public keys
       ansible.builtin.shell:
-        cmd: >-
-          wg pubkey < {{ wireguard_key_directory }}/{{ item.name }}.key
+        cmd: "wg pubkey < {{ wireguard_key_directory }}/{{ item.name }}.key"
       loop: "{{ wireguard_interfaces }}"
       register: wireguard_public_keys
       changed_when: false
       no_log: true
 
-    - name: Deploy WireGuard public keys
+    - name: Deploy public keys
       ansible.builtin.copy:
         content: "{{ item.stdout }}\n"
         dest: "{{ wireguard_key_directory }}/{{ item.item.name }}.pub"
@@ -106,7 +96,7 @@
       loop: "{{ wireguard_public_keys.results }}"
       no_log: true
 
-    - name: Read WireGuard private keys
+    - name: Read private keys for tunnel config
       ansible.builtin.slurp:
         src: "{{ wireguard_key_directory }}/{{ item.name }}.key"
       loop: "{{ wireguard_interfaces }}"
@@ -132,19 +122,21 @@
     - wireguard_enabled
     - not keepalived_enabled
 
-- name: Check WAN VIP presence (HA)
+- name: Check keepalived VIP presence (HA)
   ansible.builtin.command:
-    cmd: "ip -4 addr show dev {{ wireguard_vip_interface }}"
+    cmd: "ip -4 addr show dev {{ keepalived_ha_interface }}"
   register: wireguard_vip_state
   changed_when: false
   when:
     - wireguard_enabled
+    - keepalived_enabled
 
 - name: Manage WireGuard tunnels based on firewall role (HA)
   ansible.builtin.systemd:
     name: "wg-quick@{{ item.name }}"
-    state: "{{ 'started' if wireguard_vip_address in wireguard_vip_state.stdout else 'stopped' }}"
+    state: "{{ 'started' if keepalived_virtual_ip in wireguard_vip_state.stdout else 'stopped' }}"
     enabled: false
   loop: "{{ wireguard_interfaces }}"
   when:
     - wireguard_enabled
+    - keepalived_enabled
