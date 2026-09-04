@@ -1,5 +1,5 @@
 ---
-- name: Installer nftables
+- name: Install nftables
   ansible.builtin.apt:
     name: nftables
     state: present
@@ -21,7 +21,7 @@
     enabled: true
     state: started
 
-- name: S'assurer que nftables est démarré et activé
+- name: Ensure nftables is started and enabled
   ansible.builtin.systemd:
     name: nftables
     state: started

@@ -1,13 +1,13 @@
 ---
-- name: Configurer WireGuard
+- name: Configure WireGuard
   when: wireguard_enabled
   block:
-    - name: Installer WireGuard
+    - name: Install WireGuard
       ansible.builtin.apt:
         name: wireguard-tools
         state: present
         update_cache: true
-    - name: Créer le répertoire WireGuard
+    - name: Create WireGuard directory
       ansible.builtin.file:
         path: "{{ wireguard_key_directory }}"
         state: directory
@@ -15,7 +15,7 @@
         group: root
         mode: "0700"
 
-    - name: Générer la clé HA sur le firewall primaire
+    - name: Generate HA key on primary firewall
       ansible.builtin.shell:
         cmd: >-
           wg genkey > {{ wireguard_key_directory }}/{{ item.name }}.key
@@ -27,7 +27,7 @@
         - inventory_hostname == ansible_play_hosts_all[0]
       no_log: true
 
-    - name: Lire la clé HA depuis le firewall primaire
+    - name: Read HA key from primary firewall
       ansible.builtin.slurp:
         src: "{{ wireguard_key_directory }}/{{ item.name }}.key"
       loop: "{{ wireguard_interfaces }}"
@@ -39,12 +39,12 @@
       register: wireguard_primary_key
       no_log: true
 
-    - name: Vérifier la configuration des clés WireGuard
+    - name: Assert WireGuard key configuration
       ansible.builtin.assert:
         that:
           - wireguard_key_mode in ["standalone", "shared"]
 
-    - name: Déployer la clé WireGuard HA fournie
+    - name: Deploy provided WireGuard HA key
       ansible.builtin.copy:
         content: "{{ wireguard_shared_private_key }}\n"
         dest: "{{ wireguard_key_directory }}/{{ item.name }}.key"
@@ -57,7 +57,7 @@
         - wireguard_shared_private_key | length > 0
       no_log: true
 
-    - name: Déployer la clé WireGuard HA générée
+    - name: Deploy generated WireGuard HA key
       ansible.builtin.copy:
         content: >-
           {{ wireguard_primary_key.results[index].content | b64decode }}
@@ -73,13 +73,13 @@
         - wireguard_shared_private_key | length == 0
       no_log: true
 
-    - name: Vérifier les clés privées WireGuard
+    - name: Check WireGuard private keys
       ansible.builtin.stat:
         path: "{{ wireguard_key_directory }}/{{ item.name }}.key"
       loop: "{{ wireguard_interfaces }}"
       register: wireguard_key_stats
 
-    - name: Générer les clés privées WireGuard
+    - name: Generate WireGuard private keys
       ansible.builtin.shell:
         cmd: >-
           wg genkey > {{ wireguard_key_directory }}/{{ item.name }}.key
@@ -87,7 +87,7 @@
       loop: "{{ wireguard_interfaces }}"
       no_log: true
 
-    - name: Calculer les clés publiques WireGuard
+    - name: Compute WireGuard public keys
       ansible.builtin.shell:
         cmd: >-
           wg pubkey < {{ wireguard_key_directory }}/{{ item.name }}.key
@@ -96,7 +96,7 @@
       changed_when: false
       no_log: true
 
-    - name: Déployer les clés publiques WireGuard
+    - name: Deploy WireGuard public keys
       ansible.builtin.copy:
         content: "{{ item.stdout }}\n"
         dest: "{{ wireguard_key_directory }}/{{ item.item.name }}.pub"
@@ -106,14 +106,14 @@
       loop: "{{ wireguard_public_keys.results }}"
       no_log: true
 
-    - name: Lire les clés privées WireGuard
+    - name: Read WireGuard private keys
       ansible.builtin.slurp:
         src: "{{ wireguard_key_directory }}/{{ item.name }}.key"
       loop: "{{ wireguard_interfaces }}"
       register: wireguard_key_contents
       no_log: true
 
-    - name: Déployer les tunnels WireGuard
+    - name: Deploy WireGuard tunnel configurations
       ansible.builtin.template:
         src: wg.conf.j2
         dest: "{{ wireguard_key_directory }}/{{ item.name }}.conf"
@@ -122,7 +122,7 @@
         mode: "0600"
       loop: "{{ wireguard_interfaces }}"
 
-- name: Activer et démarrer les tunnels WireGuard (standalone)
+- name: Enable and start WireGuard tunnels (standalone)
   ansible.builtin.systemd:
     name: "wg-quick@{{ item.name }}"
     state: started
@@ -132,7 +132,7 @@
     - wireguard_enabled
     - not keepalived_enabled
 
-- name: Vérifier la présence de la VIP WAN (HA)
+- name: Check WAN VIP presence (HA)
   ansible.builtin.command:
     cmd: "ip -4 addr show dev {{ wireguard_vip_interface }}"
   register: wireguard_vip_state
@@ -140,7 +140,7 @@
   when:
     - wireguard_enabled
 
-- name: Gérer les tunnels WireGuard selon le rôle du firewall (HA)
+- name: Manage WireGuard tunnels based on firewall role (HA)
   ansible.builtin.systemd:
     name: "wg-quick@{{ item.name }}"
     state: "{{ 'started' if wireguard_vip_address in wireguard_vip_state.stdout else 'stopped' }}"

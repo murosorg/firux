@@ -1,13 +1,13 @@
 ---
-- name: Configurer strongSwan
+- name: Configure strongSwan
   block:
-    - name: Installer strongSwan
+    - name: Install strongSwan
       ansible.builtin.apt:
         name: "{{ strongswan_packages }}"
         state: present
         update_cache: true
 
-    - name: Déployer les secrets strongSwan
+    - name: Deploy strongSwan secrets
       ansible.builtin.template:
         src: ipsec.secrets.j2
         dest: /etc/ipsec.secrets
@@ -15,9 +15,9 @@
         group: root
         mode: "0600"
       when: strongswan_connections | length > 0
-      notify: Redémarrer strongSwan
+      notify: Restart strongSwan
 
-    - name: Déployer la configuration strongSwan
+    - name: Deploy strongSwan configuration
       ansible.builtin.template:
         src: ipsec.conf.j2
         dest: /etc/ipsec.conf
@@ -25,9 +25,9 @@
         group: root
         mode: "0600"
       when: strongswan_connections | length > 0
-      notify: Redémarrer strongSwan
+      notify: Restart strongSwan
 
-- name: Activer strongswan au boot (standalone)
+- name: Enable strongSwan at boot (standalone)
   ansible.builtin.systemd:
     name: strongswan-starter
     state: started
@@ -36,7 +36,7 @@
     - strongswan_enabled
     - not keepalived_enabled
 
-- name: Désactiver strongswan au boot (HA)
+- name: Disable strongSwan at boot (HA)
   ansible.builtin.systemd:
     name: strongswan-starter
     state: stopped

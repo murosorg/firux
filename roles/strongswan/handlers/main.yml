@@ -1,5 +1,5 @@
 ---
-- name: Redémarrer strongSwan
+- name: Restart strongSwan
   ansible.builtin.service:
     name: strongswan-starter
     state: restarted

@@ -3,6 +3,7 @@ keepalived_enabled: true
 conntrackd_enabled: true
 strongswan_enabled: true
 wireguard_enabled: true
+frr_enabled: true
 
 nftables_config:
   vars:

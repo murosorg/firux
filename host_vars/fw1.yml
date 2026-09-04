@@ -26,7 +26,6 @@ network_interfaces:
     netmask: 255.255.255.0
 network_routes: []
 
-frr_enabled: true
 frr_daemons:
   - zebra
   - ospfd

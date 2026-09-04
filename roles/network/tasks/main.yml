@@ -1,11 +1,11 @@
 ---
-- name: Vérifier Debian 13
+- name: Assert Debian 13
   ansible.builtin.assert:
     that:
       - ansible_facts.os_family == "Debian"
       - ansible_facts.distribution_major_version | int == 13
 
-- name: Créer le répertoire systemd-networkd
+- name: Create systemd-networkd directory
   ansible.builtin.file:
     path: /etc/systemd/network
     state: directory
@@ -13,7 +13,7 @@
     group: root
     mode: '0755'
 
-- name: Configurer les interfaces réseau
+- name: Configure network interfaces
   ansible.builtin.template:
     src: interface.network.j2
     dest: /etc/systemd/network/10-{{ interface.name }}.network
@@ -23,36 +23,36 @@
   loop: '{{ network_interfaces }}'
   loop_control:
     loop_var: interface
-  notify: Redémarrer systemd-networkd
+  notify: Restart systemd-networkd
 
-- name: Configurer les routes réseau
+- name: Configure static routes
   ansible.builtin.template:
     src: routes.network.j2
     dest: /etc/systemd/network/90-routes.network
     owner: root
     group: root
     mode: '0644'
-  notify: Redémarrer systemd-networkd
+  notify: Restart systemd-networkd
 
-- name: Configurer les paramètres sysctl persistants
+- name: Configure persistent sysctl parameters
   ansible.builtin.template:
     src: 99-network.conf.j2
     dest: /etc/sysctl.d/99-network.conf
     owner: root
     group: root
     mode: '0644'
-  notify: Recharger les paramètres sysctl
+  notify: Reload sysctl parameters
 
-- name: Appliquer immédiatement les handlers réseau
+- name: Flush network handlers
   ansible.builtin.meta: flush_handlers
 
-- name: S'assurer que systemd-networkd est actif
+- name: Ensure systemd-networkd is active
   ansible.builtin.systemd:
     name: systemd-networkd
     state: started
     enabled: true
 
-- name: Attendre que les interfaces réseau soient disponibles
+- name: Wait for network interfaces
   ansible.builtin.wait_for:
     path: /sys/class/net/eth1
     timeout: 30
